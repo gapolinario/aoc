@@ -55,7 +55,7 @@ with open(true_input,'r') as f:
             b = re_search_to_int(re.search(r'(\d+) blue', round))
             rlist.append([r,g,b])
         rlist = np.array(rlist)
-        power = np.max(rlist[:,0]) * np.max(rlist[:,1]) * np.max(rlist[:,2])
+        power = max(rlist[:,0]) * max(rlist[:,1]) * max(rlist[:,2])
         ans += power
 
 print(f"part 2 = {ans}")
@@ -71,7 +71,6 @@ with open(true_input,'r') as f:
         rounds = re.split(';|:',i)
         id = re.search(r'Game (\d+)', i)
         possible = True
-        # 3 is just a rough bound on the number of rounds
         rlist = {'red': [], 'blue': [], 'green': []}
         for round in rounds[1:]:
             r = re_search_to_int(re.search(r'(\d+) red', round))
