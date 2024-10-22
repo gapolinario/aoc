@@ -15,9 +15,9 @@ def minus_to_max(x,max=1000):
     else:
         return x
 
-def minus_to_min(x,max=1000):
+def minus_to_min(x,abs_min=1000):
     if x < 0:
-        return -max
+        return -abs_min
     else:
         return x
 

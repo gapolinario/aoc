@@ -1,15 +1,7 @@
-import re
+with open('../input/05.dat','r') as f:
 
-test_input = f"../input/sandbox.dat"
+    f.seek(0)
+    print(f.readline())
 
-with open(test_input,'r') as f:
-
-    l = []
-    for i in f:
-        it = re.finditer(r'(\d+)',i)
-
-    for i in it:
-        print(i.group(1))
-
-    for i in it:
-        print(i.group(1))
+    f.seek(10)
+    print(f.readline())
