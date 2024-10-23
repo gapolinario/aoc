@@ -1,6 +1,7 @@
 import os
 import re
 import numpy as np
+#from numba import jit
 
 day = 5
 
@@ -39,6 +40,16 @@ def piecewise_linear_fun(x,fun):
     
     # default case
     return x
+
+def composite_seed_to_location(seed,fun_tensor):
+
+    # fun_tensor is an array, each element is an M_a x 3 tensor
+
+    loc = seed
+    for a in fun_tensor:
+        loc = piecewise_linear_fun(loc,a)
+
+    return loc
 
 with open(true_input,'r') as f:
 
@@ -138,9 +149,16 @@ with open(true_input,'r') as f:
 
     max_locs = max([ x[0] + x[2] for x in fun_humidity_to_location ])
     ans = max_locs + 1
+    print(max_locs)
 
-    for a,b in seed_pairs:
-        for seed in range(a,a+b):
+    fun_tensor = [fun_seed_to_soil,fun_soil_to_fertilizer,fun_fertilizer_to_water,
+                    fun_water_to_light,fun_light_to_temperature,fun_temperature_to_humidity,
+                    fun_humidity_to_location]
+
+    # test composite function and fun tensor are correct
+    if False:
+
+        for seed in range(0,max_seed,1000):
             
             loc = piecewise_linear_fun(seed,fun_seed_to_soil)
             loc = piecewise_linear_fun(loc,fun_soil_to_fertilizer)
@@ -150,7 +168,61 @@ with open(true_input,'r') as f:
             loc = piecewise_linear_fun(loc,fun_temperature_to_humidity)
             loc = piecewise_linear_fun(loc,fun_humidity_to_location)
 
-            ans = min([ans,loc])
+            assert( loc == composite_seed_to_location(seed,fun_tensor) )
+
+    del fun_seed_to_soil
+    del fun_soil_to_fertilizer
+    del fun_fertilizer_to_water
+    del fun_water_to_light
+    del fun_light_to_temperature
+    del fun_temperature_to_humidity
+    del fun_humidity_to_location
+
+    # test how long it would take to brute force it, up to 15h
+    if False:
+
+        for seed in range(max_seed//1000):
+            
+            loc = composite_seed_to_location(seed,fun_tensor)
+
+    # runtime tests
+    # max_seed = max_locs = 4 060 994 810
+    # 4K = 4 * 10^3 function evaluations, 2s (experimental)
+    # 4M = 4 * 10^6, 45s (experimental)
+    # 4B = 4 * 10^9, up to 900 min = 15h
+
+    # test how long it would take with a simpler function, 30 min
+    if False:
+
+        u = 0
+        for seed in range(max_seed//1000):
+            
+            u += 1
+
+    # runtime tests, with a simple function
+    # 4M = 4 * 10^6, 2s (experimental)
+    # 4B = 4 * 10^9, 
+
+    # test how long it would take with a single piecewise function, about 2h
+    if False:
+
+        for seed in range(max_seed//1000):
+            
+            loc = piecewise_linear_fun(seed,fun_seed_to_soil)
+
+    # runtime tests, single piecewise function
+    # 4M = 4 * 10^6, 7s (experimental)
+    # 4B = 4 * 10^9, 7000s = 2h
+
+    if True:
+
+        for a,b in seed_pairs:
+
+            loca = composite_seed_to_location(a)
+            locb = composite_seed_to_location(a+b)
+            if locb == loca + b:
+                pass
+
 
 print(f"part 2 = {ans}")
 
