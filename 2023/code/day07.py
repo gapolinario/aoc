@@ -52,18 +52,7 @@ def matchings(hand):
                 matchs[i] += 1
 
     # sort
-    sorted_matchs = [] * 5
-    for i,c in enumerate(matchs):
-        minv = c
-        mini = i
-        for j,d in enumerate(matchs):
-            if d < minv:
-                minv  = d
-                mini = j
-        if mini != i:
-            sorted_matchs[i] = minv
-            sorted_matchs[mini] = c
-
+    sorted_matchs = sorted(matchs)
 
     if   sorted_matchs == [5,0,0,0,0]:
         return "five_kind"
@@ -84,20 +73,6 @@ def matchings(hand):
 
 with open(true_input,'r') as f:
 
-    # array of total race times
-    t_array = [ int(x) for x in re.findall(r'(\d+)',f.readline())]
-    # array of record distances
-    r_array = [ int(x) for x in re.findall(r'(\d+)',f.readline())]
-
-    for t,r in zip(t_array,r_array):
-
-        # multiplicity = number of solutions
-        # to travel_dist > record_travel_dist
-        t1,t2 = get_hold_times(t,r)
-
-        mult = t2-t1
-        print(t1,t2,mult)
-
-        ans *= mult
+    pass
 
 print(f"part 1 = {ans}")

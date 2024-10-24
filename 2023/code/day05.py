@@ -1,7 +1,7 @@
 import os
 import re
 import numpy as np
-#from numba import jit
+from numba import jit
 
 day = 5
 
@@ -30,6 +30,7 @@ def get_fun_specs(f,loc_start,loc_end):
 
     return np.array(specs)
 
+@jit
 def piecewise_linear_fun(x,fun):
 
     # fun is an M x 3 array
@@ -41,6 +42,7 @@ def piecewise_linear_fun(x,fun):
     # default case
     return x
 
+# need type anotations for jit
 def composite_seed_to_location(seed,fun_tensor):
 
     # fun_tensor is an array, each element is an M_a x 3 tensor
@@ -50,6 +52,15 @@ def composite_seed_to_location(seed,fun_tensor):
         loc = piecewise_linear_fun(loc,a)
 
     return loc
+
+def break_interval(begin,end):
+    
+    a = composite_seed_to_location(begin)
+    b = composite_seed_to_location(end)
+
+    if b != a+(end-begin):
+        #do something
+        pass
 
 with open(true_input,'r') as f:
 
@@ -103,7 +114,7 @@ print(f"part 1 = {ans}")
 
 ans = 0
 
-with open(true_input,'r') as f:
+with open(test_input,'r') as f:
 
     # last byte of file
     loc_end_f = f.seek(0,2)
@@ -144,12 +155,12 @@ with open(true_input,'r') as f:
     fun_temperature_to_humidity = get_fun_specs(f,loc_temperature_to_humidity,loc_humidity_to_location)
     fun_humidity_to_location    = get_fun_specs(f,loc_humidity_to_location,loc_end_f)
 
-    max_seed = max([ x[1] + x[2] for x in fun_humidity_to_location ])
-    print(max_seed)
+    max_seed = max([ x[1] + x[2] for x in fun_seed_to_soil ])
+    #print(max_seed) # 4294967296
 
     max_locs = max([ x[0] + x[2] for x in fun_humidity_to_location ])
     ans = max_locs + 1
-    print(max_locs)
+    #print(max_locs) # 4060994810
 
     fun_tensor = [fun_seed_to_soil,fun_soil_to_fertilizer,fun_fertilizer_to_water,
                     fun_water_to_light,fun_light_to_temperature,fun_temperature_to_humidity,
@@ -180,16 +191,30 @@ with open(true_input,'r') as f:
 
     # test how long it would take to brute force it, up to 15h
     if False:
-
-        for seed in range(max_seed//1000):
-            
+        for seed in range(max_seed):
             loc = composite_seed_to_location(seed,fun_tensor)
 
     # runtime tests
     # max_seed = max_locs = 4 060 994 810
     # 4K = 4 * 10^3 function evaluations, 2s (experimental)
     # 4M = 4 * 10^6, 45s (experimental)
-    # 4B = 4 * 10^9, up to 900 min = 15h
+    # 4B = 4 * 10^9, up to 900 min = 15h (predicted)
+
+    # runtime tests, with jit
+    # 4K = 4 * 10^3 function evaluations, 2s (experimental)
+    # 4M = 4 * 10^6, 6s (experimental)
+    # 4B = 4 * 10^9, 66 min (experimental, less than the expected)
+
+    # brute force with numba acceleration
+    if True:
+
+        for a,b in seed_pairs:
+            for seed in range(a,a+b):
+                loc = composite_seed_to_location(seed,fun_tensor)
+                ans = min([ans,loc])
+
+    # this worked, timing was:
+    # caffeinate python3 day05.py  2.21s user 0.27s system 259% cpu 0.957 total
 
     # test how long it would take with a simpler function, 30 min
     if False:
@@ -214,12 +239,27 @@ with open(true_input,'r') as f:
     # 4M = 4 * 10^6, 7s (experimental)
     # 4B = 4 * 10^9, 7000s = 2h
 
-    if True:
+    # this is an attempt at being smarter, 
+    # and using binary search to build the composite function
+    # together with sampling to check the result is correct
+    # then using it again to find the location that is the smallest
+    # actually the numba version above worked
+    if False:
+
+        fun_specs = []
+        linear = False
+        begin = 0
+        end   = max_seed
+        locbeg = composite_seed_to_location(end)
+        while not linear:
+            end = break_interval(begin,end)
+
+        fun_specs.append([locbeg,begin,end-begin])
 
         for a,b in seed_pairs:
 
-            loca = composite_seed_to_location(a)
-            locb = composite_seed_to_location(a+b)
+            loca = composite_seed_to_location(a,fun_tensor)
+            locb = composite_seed_to_location(a+b,fun_tensor)
             if locb == loca + b:
                 pass
 
