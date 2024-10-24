@@ -1,7 +1,5 @@
-with open('../input/05.dat','r') as f:
+hand = 'AA'
 
-    f.seek(0)
-    print(f.readline())
+num_jokers = sum([1 if c == "J" else 0 for c in hand ])
 
-    f.seek(10)
-    print(f.readline())
+print(num_jokers)
