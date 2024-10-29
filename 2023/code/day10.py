@@ -236,63 +236,10 @@ with open(true_input,'r') as f:
 
         #print(f"step x: p={d1-py,px+1}, a={a}, rot={rot}")
 
-    # determine if rotation is clockwise or anticlockwise
-    #if rot != 3 and rot != -3:
-    #    raise ValueError(f"Invalid rotation value after one cycle. rot={rot}")
-
-    #print_loop(loop,d1)
-
-    for py in range(d1):
-        for px in range(d2):
-            # rename pipes that are not in the main loop
-            in_loop = [py,px] in loop
-            if not in_loop and is_pipe(t[py,px]):
-                t[py,px] = ' '
-            # rename pipes in the main loop
-            #elif in_loop:
-            #    t[py,px] = '■'
-
     # more hard coding: I know that rot = 5 in this example
     # so rot > 0 always
     assert(rot > 0)
-    for py,px in loop:
-        
-        if   t[py,px] == 'L':
-            if t[py+1,px+1] == '.':
-                t[py+1,px+1] = '■'
-        elif t[py,px] == 'F':
-            if t[py-1,px+1] == '.':
-                t[py-1,px+1] = '■'
-        elif t[py,px] == '7':
-            if t[py-1,px-1] == '.':
-                t[py-1,px-1] = '■'
-        elif t[py,px] == 'J':
-            if t[py+1,px-1] == '.':
-                t[py+1,px-1] = '■'
-
-    # paint again, this is to aid visual inspection
-    #for py in range(d1):
-    #    for px in range(d2):
-    #        if t[py,px] == '.':
-    #            t[py,px] = '🟨'
-
-    # print annotated grid
-    with open(output,'w') as g:
-        for l in reversed(t):
-            g.write(''.join(l))
-            g.write('\n')
-
-    # determine the orientation of the loop
-
-    # now I just have to search over the ground
-    # then I use something like bucket fill
-
-    # count number of I's
-    #for py in range(d2):
-    #    for px in range(d1):
-    #        if t[py,px] == 'I':
-    #            ans += 1
-
+    
     for i in range(len(loop)):
 
         if i == len(loop)-1:
@@ -309,6 +256,10 @@ with open(true_input,'r') as f:
     # i had to remove the area of the loop,
     # approximately len(loop)/2, and to add 1 for
     # some reason. it worked
+    # but I think this is not general, because
+    # it should only count ground inside the loop
+    # but it counts everything, including pipes
+    # disconnected from the main pipe
     ans -= len(loop)//2
     ans += 1
 
