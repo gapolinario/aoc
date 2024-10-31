@@ -1,17 +1,6 @@
 import numpy as np
 
-dy = 9
-for i in range(1,dy-1):
-    print(i)
+t1 = [1,2,2,3,3,5]
+t2 = [3,2,2,3,3,5]
 
-print()
-for i in range(dy-2,0,-1):
-    print(i)
-
-print()
-for i in np.concatenate((np.arange(dy//2,0,-1),np.arange(dy//2+1,dy-1))):
-    print(i)
-
-print()
-for i in np.concatenate((np.arange(dy//2+1,0,-1),np.arange(dy//2+1,dy-1))):
-    print(i)
+print(np.sum([x1!=x2 for x1,x2 in zip(t1,t2)]))

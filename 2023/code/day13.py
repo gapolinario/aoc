@@ -100,6 +100,9 @@ print(f"part 1 = {ans}")
 
 ans = 0
 
+def count_diffs(t1,t2):
+    return np.sum([x1!=x2 for x1,x2 in zip(t1,t2)])
+
 with open(true_input,'r') as f:
     
     s = f.read()
@@ -130,46 +133,18 @@ with open(true_input,'r') as f:
 
         # loop over lines, horizontal reflection
         for i in range(1,dy):
-        # greedy search, alternative 1
-        #for i in np.concatenate((np.arange(dy//2,0,-1),np.arange(dy//2+1,dy-1))):
-        # greedy search, alternative 2
-        #for i in np.concatenate((np.arange(dy//2+1,0,-1),np.arange(dy//2+1,dy-1))):
-            #print(f"axis of reflection: x {i}")
-            #print(t[i:min(2*i,dy),:])
-            #print(t[max(0,2*i-dy):i,:][::-1,:])
-            if np.all(t[i:min(2*i,dy),:] == t[max(0,2*i-dy):i,:][::-1,:]):
+            if count_diffs(t[i:min(2*i,dy),:],t[max(0,2*i-dy):i,:][::-1,:])==1:
+                #print(f"x={i}")
                 ax = i
                 allx.append(ax)
-                #print(f"axis of reflection: x {i}")
-                #print(t[i:min(2*i,dy),:])
-                #print(t[max(0,2*i-dy):i,:][::-1,:])
-                #break
-
+        
         # loop over lines, vertical reflection
         for i in range(1,dx):
-        # greedy search, alternative 1
-        #for i in np.concatenate((np.arange(dx//2,0,-1),np.arange(dx//2+1,dx-1))):
-        # greedy search, alternative 2
-        #for i in np.concatenate((np.arange(dx//2+1,0,-1),np.arange(dx//2+1,dx-1))):
-            #print(f"axis of reflection: y {i}")
-            #print(t[:,i:min(2*i,dx)])
-            #print(t[:,max(0,2*i-dx):i][:,::-1])
-            if np.all(t[:,i:min(2*i,dx)] == t[:,max(0,2*i-dx):i][:,::-1]):
+            if count_diffs(t[:,i:min(2*i,dx)],t[:,max(0,2*i-dx):i][:,::-1])==1:
+                #print(f"y={i}")
                 ay = i
                 ally.append(ay)
-                #print(f"axis of reflection: y {i}")
-                #print(t[:,i:min(2*i,dx)])
-                #print(t[:,max(0,2*i-dx):i][:,::-1])
-                #break
-
-        #if ax != 0 and ay != 0:
-        #    pretty_print(t)
-        #    raise InterruptedError("Two axis of rotation here!")
-
-        #pretty_print([t[0,:]])
-        #print(f"axis: {allx} {ally}")
-
-        #print(f"{ax} {ay}")
+        
         ans += 100 * ax + ay
 
-print(f"part 1 = {ans}")
+print(f"part 2 = {ans}")
