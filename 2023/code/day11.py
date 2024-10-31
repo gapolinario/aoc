@@ -144,3 +144,4 @@ print(f"part 2 = {ans}")
 
 # ans = 82000210, too low
 # my mistake: I used the test input ...
+# checking reddit, many people made this mistake :)

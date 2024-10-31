@@ -1,5 +1,17 @@
-hand = 'AA'
+import numpy as np
 
-num_jokers = sum([1 if c == "J" else 0 for c in hand ])
+dy = 9
+for i in range(1,dy-1):
+    print(i)
 
-print(num_jokers)
+print()
+for i in range(dy-2,0,-1):
+    print(i)
+
+print()
+for i in np.concatenate((np.arange(dy//2,0,-1),np.arange(dy//2+1,dy-1))):
+    print(i)
+
+print()
+for i in np.concatenate((np.arange(dy//2+1,0,-1),np.arange(dy//2+1,dy-1))):
+    print(i)
